@@ -159,6 +159,16 @@ TYPED_TEST(test_allreduce, single_cuda_inplace) {
 }
 #endif
 
+#ifdef HAVE_HIP
+TYPED_TEST(test_allreduce, single_rocm) {
+    TEST_DECLARE(UCC_MEMORY_TYPE_ROCM, TEST_NO_INPLACE);
+}
+
+TYPED_TEST(test_allreduce, single_rocm_inplace) {
+    TEST_DECLARE(UCC_MEMORY_TYPE_ROCM, TEST_INPLACE);
+}
+#endif
+
 
 #define TEST_DECLARE_MULTIPLE(_mem_type, _inplace)                             \
 {                                                                              \

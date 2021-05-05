@@ -141,6 +141,8 @@ AS_IF([test "x$with_docs_only" = xyes],
      AM_CONDITIONAL([HAVE_UCX], [false])
      AM_CONDITIONAL([HAVE_CUDA], [false])
      AM_CONDITIONAL([HAVE_NCCL], [false])
+     AM_CONDITIONAL([HAVE_ROCM], [false])
+     AM_CONDITIONAL([HAVE_HIP], [false])
      AM_CONDITIONAL([HAVE_MPI], [false])
      AM_CONDITIONAL([HAVE_MPIRUN], [false])
      AM_CONDITIONAL([HAVE_MPICC], [false])
@@ -153,6 +155,7 @@ AS_IF([test "x$with_docs_only" = xyes],
      m4_include([config/m4/sysdep.m4])
      m4_include([config/m4/ucx.m4])
      m4_include([config/m4/cuda.m4])
+     m4_include([config/m4/rocm.m4])
      m4_include([config/m4/nccl.m4])
      m4_include([config/m4/mpi.m4])
      m4_include([test/gtest/configure.m4])
@@ -182,6 +185,10 @@ AS_IF([test "x$with_docs_only" = xyes],
      CHECK_CUDA
      AC_MSG_RESULT([CUDA support: $cuda_happy; $CUDA_CPPFLAGS $CUDA_LDFLAGS])
 
+     CHECK_ROCM
+     AC_MSG_RESULT([ROCM support: $rocm_happy; $ROCM_CPPFLAGS $ROCM_LDFLAGS])
+     AC_MSG_RESULT([HIP support: $hip_happy; $HIP_CPPFLAGS $HIP_LDFLAGS])
+
      CHECK_NCCL
      AC_MSG_RESULT([NCCL support: $nccl_happy])
     ]) # Docs only
@@ -205,6 +212,7 @@ AC_CONFIG_FILES([
                  src/components/mc/cpu/Makefile
                  src/components/mc/cuda/Makefile
                  src/components/mc/cuda/kernel/Makefile
+                 src/components/mc/rocm/Makefile
                  test/mpi/Makefile
                  tools/info/Makefile
                  tools/perf/Makefile

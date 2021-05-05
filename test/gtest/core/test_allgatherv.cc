@@ -160,8 +160,10 @@ INSTANTIATE_TEST_CASE_P(
     ::testing::Combine(
         ::testing::Range(1, UccJob::nStaticTeams), // team_ids
         ::testing::Range((int)UCC_DT_INT8, (int)UCC_DT_INT64 + 1), // dtype
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA)
         ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_CUDA), // mem type
+#elif defined(HAVE_HIP)
+        ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_ROCM), // mem type
 #else
         ::testing::Values(UCC_MEMORY_TYPE_HOST),
 #endif
@@ -205,8 +207,10 @@ INSTANTIATE_TEST_CASE_P(
     , test_allgatherv_1,
     ::testing::Combine(
         ::testing::Range((int)UCC_DT_INT8, (int)UCC_DT_INT64 + 1), // dtype
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA)
         ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_CUDA), // mem type
+#elif defined(HAVE_HIP)
+        ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_ROCM), // mem type
 #else
         ::testing::Values(UCC_MEMORY_TYPE_HOST),
 #endif

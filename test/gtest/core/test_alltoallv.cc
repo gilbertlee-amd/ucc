@@ -196,8 +196,10 @@ INSTANTIATE_TEST_CASE_P(
         64, test_alltoallv_0,
         ::testing::Combine(
             ::testing::Range(1, UccJob::nStaticTeams), // team_ids
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA)
             ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_CUDA), // mem type
+#elif defined(HAVE_HIP)
+            ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_ROCM), // mem type
 #else
             ::testing::Values(UCC_MEMORY_TYPE_HOST),
 #endif
@@ -209,8 +211,10 @@ INSTANTIATE_TEST_CASE_P(
         32, test_alltoallv_1,
         ::testing::Combine(
             ::testing::Range(1, UccJob::nStaticTeams), // team_ids
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA)
             ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_CUDA), // mem type
+#elif defined(HAVE_HIP)
+            ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_ROCM), // mem type
 #else
             ::testing::Values(UCC_MEMORY_TYPE_HOST),
 #endif
@@ -300,8 +304,10 @@ INSTANTIATE_TEST_CASE_P(
 INSTANTIATE_TEST_CASE_P(
         32, test_alltoallv_3,
         ::testing::Combine(
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA)
             ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_CUDA), // mem type
+#elif defined(HAVE_HIP)
+            ::testing::Values(UCC_MEMORY_TYPE_HOST, UCC_MEMORY_TYPE_ROCM), // mem type
 #else
             ::testing::Values(UCC_MEMORY_TYPE_HOST),
 #endif

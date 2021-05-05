@@ -14,6 +14,10 @@ if HAVE_CUDA
 mc_dirs += components/mc/cuda
 endif
 
+if HAVE_ROCM
+mc_dirs += components/mc/rocm
+endif
+
 if HAVE_NCCL
 tl_dirs += components/tl/nccl
 endif
