@@ -302,7 +302,9 @@ static ucc_status_t ucc_mc_cuda_mem_query(const void *ptr,
     }
 
     if (ptr == 0) {
-        mem_type = UCC_MEMORY_TYPE_HOST;
+        mem_attr->mem_type     = UCC_MEMORY_TYPE_HOST;
+        mem_attr->base_address = NULL;
+        mem_attr->alloc_length = 0;
     } else {
         if (mem_attr->field_mask & UCC_MEM_ATTR_FIELD_MEM_TYPE) {
             st = cudaPointerGetAttributes(&attr, ptr);
@@ -481,6 +483,7 @@ ucc_status_t ucc_ee_cuda_event_test(void *event)
 ucc_mc_cuda_t ucc_mc_cuda = {
     .super.super.name       = "cuda mc",
     .super.ref_cnt          = 0,
+    .super.ee_type          = UCC_EE_CUDA_STREAM,
     .super.type             = UCC_MEMORY_TYPE_CUDA,
     .super.init             = ucc_mc_cuda_init,
     .super.finalize         = ucc_mc_cuda_finalize,
