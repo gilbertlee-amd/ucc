@@ -3,7 +3,7 @@
 #
 
 if HAVE_ROCM
-#SUBDIRS = kernel
+SUBDIRS = kernel
 
 sources =    \
 	mc_rocm.h \
