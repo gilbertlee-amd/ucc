@@ -2,16 +2,17 @@
 # Copyright (C) Mellanox Technologies Ltd. 2021.  ALL RIGHTS RESERVED.
 #
 
-NVCC = nvcc
-NVCCFLAGS = ${AM_CPPFLAGS} ${UCS_CPPFLAGS} -I${UCC_TOP_BUILDDIR} -I${UCC_TOP_SRCDIR}/src -I${UCC_TOP_BUILDDIR}/src --compiler-options -fno-rtti,-fno-exceptions
+HIPCC = hipcc
+HIPCCFLAGS = ${AM_CPPFLAGS} ${UCS_CPPFLAGS} -I${UCC_TOP_BUILDDIR} -I${UCC_TOP_SRCDIR}/src -I${UCC_TOP_BUILDDIR}/src 
+#--compiler-options -fno-rtti,-fno-exceptions
 
 LINK = $(LIBTOOL) --mode=link $(CC) -o $@
 
 .cu.o:
-	$(NVCC) -c $< -o $@  $(NVCCFLAGS) $(NVCC_ARCH)
+	$(HIPCC) -c $< -o $@  $(HIPCCFLAGS)
 
 .cu.lo:
-	/bin/bash $(top_srcdir)/rocm_lt.sh "$(LIBTOOL)" $@ $(NVCC) -c  $< $(NVCCFLAGS) $(NVCC_ARCH)
+	/bin/bash $(top_srcdir)/rocm_lt.sh "$(LIBTOOL)" $@ $(HIPCC) -c  $< $(HIPCCFLAGS) $(HIPCC_ARCH)
 
 comp_noinst = libucc_mc_rocm_kernels.la
 
