@@ -240,7 +240,7 @@ void UccTestMpi::set_displ_vsizes(std::vector<ucc_test_vsize_flag_t> &_displs_vs
 }
 
 #if defined(HAVE_CUDA) || defined(HAVE_HIP)
-void set_device(test_set_gpu_device_t set_device)
+void set_gpu_device(test_set_gpu_device_t set_device)
 {
     MPI_Comm local_comm;
     int gpu_dev_count;

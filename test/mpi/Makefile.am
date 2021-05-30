@@ -23,12 +23,20 @@ ucc_test_mpi_SOURCES = \
 	test_alltoall.cc   \
 	test_alltoallv.cc
 
-CXX=mpicxx
-ucc_test_mpi_CXXFLAGS=-I${top_builddir}/src -std=gnu++11
-
-ucc_test_mpi_LDFLAGS=-L${top_builddir}/src/.libs -lucc
+CXX=$(MPICXX)
+LD=$(MPICXX)
+ucc_test_mpi_CPPFLAGS=$(BASE_CPPFLAGS)
+ucc_test_mpi_CXXFLAGS=$(BASE_CXXFLAGS) -std=gnu++11
+ucc_test_mpi_LDADD=$(UCC_TOP_BUILDDIR)/src/libucc.la
 
 if HAVE_CUDA
-ucc_test_mpi_CXXFLAGS+=$(CUDA_CPPFLAGS) -DUCC_TEST_WITH_CUDA
-ucc_test_mpi_LDFLAGS+=$(CUDA_LDFLAGS) $(CUDA_LIBS)
+ucc_test_mpi_CPPFLAGS+=$(CUDA_CPPFLAGS)
+ucc_test_mpi_LDFLAGS=$(CUDA_LDFLAGS)
+ucc_test_mpi_LDADD+=$(CUDA_LIBS)
+endif
+
+if HAVE_HIP
+ucc_test_mpi_CPPFLAGS+=$(HIP_CPPFLAGS)
+ucc_test_mpi_LDFLAGS=$(HIP_LDFLAGS)
+ucc_test_mpi_LDADD+=$(HIP_LIBS)
 endif
