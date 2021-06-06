@@ -18,7 +18,6 @@ extern "C" {
 #include <assert.h>
 #include <stdio.h>
 
-#if 0
 #define ROCM_REDUCE_WITH_OP(NAME, OP)                                          \
 template <typename T>                                                          \
 __global__ void UCC_REDUCE_ROCM_ ## NAME (const T *s1, const T *s2, T *d,      \
@@ -44,8 +43,8 @@ ROCM_REDUCE_WITH_OP(BXOR, DO_OP_BXOR)
 
 #define LAUNCH_KERNEL(NAME, type, src1, src2, dest, count, s, b, t)            \
     do {                                                                       \
-        UCC_REDUCE_ROCM_ ## hipLaunchKernelGGL(HIP_KERNEL_NAME(NAME<type>), dim3(b), dim3(t), 0, s, src1, src2,            \
-                                                        dest, count);          \
+        hipLaunchKernelGGL(UCC_REDUCE_ROCM_ ## NAME<type>,                     \
+                           dim3(b), dim3(t), 0, s, src1, src2, dest, count);   \
     } while(0)
 
 
@@ -114,7 +113,6 @@ ROCM_REDUCE_WITH_OP(BXOR, DO_OP_BXOR)
             return UCC_ERR_NOT_SUPPORTED;                                      \
         }                                                                      \
     } while(0)
-#endif
 
 
 #ifdef __cplusplus
@@ -126,7 +124,6 @@ ucc_status_t ucc_mc_rocm_reduce(const void *src1, const void *src2, void *dst,
                                 ucc_reduction_op_t op)
 {
     hipStream_t  stream = ucc_mc_rocm.stream;
-#if 0
     int           th     = MC_ROCM_CONFIG->reduce_num_threads;;
     unsigned long bk     = (count + th - 1)/th;;
 
@@ -156,7 +153,6 @@ ucc_status_t ucc_mc_rocm_reduce(const void *src1, const void *src2, void *dst,
             mc_error(&ucc_mc_rocm.super, "unsupported reduction type (%d)", dt);
             return UCC_ERR_NOT_SUPPORTED;
     }
-#endif
     ROCMCHECK(hipGetLastError());
     ROCMCHECK(hipStreamSynchronize(stream));
     return UCC_OK;

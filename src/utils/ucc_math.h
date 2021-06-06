@@ -10,8 +10,11 @@
 #include <ucs/sys/math.h>
 #include "ucc_datastruct.h"
 #include "ucc/api/ucc.h"
-#define ucc_min(_a, _b) ucs_min((_a), (_b))
-#define ucc_max(_a, _b) ucs_max((_a), (_b))
+//#define ucc_min(_a, _b) ucs_min((_a), (_b))
+//#define ucc_max(_a, _b) ucs_max((_a), (_b))
+// Todo: Not using ucs_min/max due to typeof
+#define ucc_min(_a, _b) (((_a) < (_b)) ? (_a) : (_b))
+#define ucc_max(_a, _b) (((_a) > (_b)) ? (_a) : (_b))
 #define ucc_ilog2(_v)   ucs_ilog2((_v))
 
 #define DO_OP_MAX(_v1, _v2) (_v1 > _v2 ? _v1 : _v2)
