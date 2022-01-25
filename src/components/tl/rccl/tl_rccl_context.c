@@ -17,7 +17,7 @@ ucc_status_t ucc_tl_rccl_event_collective_progress(ucc_coll_task_t *coll_task)
     ucc_status_t status;
 
     ucc_assert(task->completed != NULL);
-    status = ucc_mc_ee_event_test(task->completed, UCC_EE_ROCM_STREAM);
+    status = ucc_mc_ee_event_test(task->completed, UCC_EE_CUDA_STREAM);
     coll_task->super.status = status;
 #ifdef HAVE_PROFILING_TL_RCCL
     if (coll_task->super.status == UCC_OK) {
@@ -55,53 +55,12 @@ static ucc_mpool_ops_t ucc_tl_rccl_req_mpool_ops = {
     .obj_cleanup   = NULL
 };
 
-static ucc_status_t ucc_tl_rccl_req_mapped_mpool_chunk_malloc(ucc_mpool_t *mp,
-                                                              size_t *size_p,
-                                                              void ** chunk_p)
-{
-    hipError_t status;
-
-    status = hipHostAlloc((void**)chunk_p, *size_p, hipHostAllocMapped);
-    if (status != hipSuccess) {
-        return UCC_ERR_NO_MEMORY;
-    }
-
-    return UCC_OK;
-}
-
-static void ucc_tl_rccl_req_mapped_mpool_chunk_free(ucc_mpool_t *mp,
-                                                    void *chunk)
-{
-  hipFreeHost(chunk);
-}
-
-static void ucc_tl_rccl_req_mapped_mpool_obj_init(ucc_mpool_t *mp, void *obj,
-                                                  void *chunk)
-{
-    ucc_tl_rccl_task_t *req = (ucc_tl_rccl_task_t*) obj;
-    hipError_t st;
-    st = hipHostGetDevicePointer((void **)(&req->dev_status),
-                                 (void *)&req->host_status, 0);
-    if (st != hipSuccess) {
-        req->super.super.status = UCC_ERR_NO_MESSAGE;
-    }
-    req->super.progress = ucc_tl_rccl_driver_collective_progress;
-}
-
-static ucc_mpool_ops_t ucc_tl_rccl_req_mapped_mpool_ops = {
-    .chunk_alloc   = ucc_tl_rccl_req_mapped_mpool_chunk_malloc,
-    .chunk_release = ucc_tl_rccl_req_mapped_mpool_chunk_free,
-    .obj_init      = ucc_tl_rccl_req_mapped_mpool_obj_init,
-    .obj_cleanup   = NULL
-};
-
 UCC_CLASS_INIT_FUNC(ucc_tl_rccl_context_t,
                     const ucc_base_context_params_t *params,
                     const ucc_base_config_t *config)
 {
     ucc_tl_rccl_context_config_t *tl_rccl_config =
         ucc_derived_of(config, ucc_tl_rccl_context_config_t);
-    int mem_ops_attr = 0;
     ucc_status_t status;
 
     UCC_CLASS_CALL_SUPER_INIT(ucc_tl_context_t, tl_rccl_config->super.tl_lib,
@@ -132,7 +91,7 @@ UCC_CLASS_INIT_FUNC(ucc_tl_rccl_context_t,
     }
     // scratch buffer for barrier
     hipError_t hip_st = hipMalloc(&self->scratch_buf, sizeof(float));
-    if (hip_st != cudaSuccess) {
+    if (hip_st != hipSuccess) {
         return UCC_ERR_NO_MEMORY;
     }
     tl_info(self->super.super.lib, "initialized tl context: %p", self);

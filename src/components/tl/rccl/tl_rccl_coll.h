@@ -31,7 +31,7 @@ ucc_status_t ucc_tl_rccl_triggered_post(ucc_ee_h ee, ucc_ev_t *ev,
 ucc_status_t ucc_tl_rccl_coll_finalize(ucc_coll_task_t *coll_task);
 
 ucc_status_t ucc_tl_rccl_collective_sync(ucc_tl_rccl_task_t *task,
-                                         cudaStream_t stream);
+                                         hipStream_t stream);
 
 ucc_status_t ucc_tl_rccl_allgather_init(ucc_tl_rccl_task_t *task);
 

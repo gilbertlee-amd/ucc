@@ -33,7 +33,7 @@ UCC_CLASS_INIT_FUNC(ucc_tl_rccl_team_t, ucc_base_context_t *tl_context,
     if (UCC_TL_TEAM_RANK(self) == 0) {
         ncclResult_t st;
         st = ncclGetUniqueId(&self->unique_id[size]);
-        if (st != rcclSuccess) {
+        if (st != ncclSuccess) {
             tl_error(ctx->super.super.lib, "failed to get unique id");
             memset(&self->unique_id[size], 0, sizeof(ncclUniqueId));
         }
@@ -102,9 +102,9 @@ ucc_status_t ucc_tl_rccl_team_create_test(ucc_base_team_t *tl_team)
     HIPCHECK_GOTO(hipStreamCreateWithFlags(&team->stream,
                    hipStreamNonBlocking), free_unique_id, status,
                    tl_team->context->lib);
-    rccl_status = rcclCommInitRank(&team->rccl_comm, UCC_TL_TEAM_SIZE(team),
+    rccl_status = ncclCommInitRank(&team->rccl_comm, UCC_TL_TEAM_SIZE(team),
                                    team->unique_id[0], UCC_TL_TEAM_RANK(team));
-    if (rccl_status != rcclSuccess) {
+    if (rccl_status != ncclSuccess) {
         tl_info(tl_team->context->lib, "RCCL error %d %s",
                 rccl_status, ncclGetErrorString(rccl_status));
         status = UCC_ERR_NO_MESSAGE;

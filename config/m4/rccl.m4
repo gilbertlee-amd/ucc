@@ -77,8 +77,8 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
             ])
         ])
 
-        CFLAGS="$save_CFLAGS"
-        CPPFLAGS="$save_CPPFLAGS"
+        CFLAGS="$save_CFLAGS -I/opt/rocm/include -D__HIP_PLATFORM_AMD__"
+        CPPFLAGS="$save_CPPFLAGS -I/opt/rocm/include -D__HIP_PLATFORM_AMD__"
         LDFLAGS="$save_LDFLAGS"
 
     ],

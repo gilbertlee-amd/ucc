@@ -73,7 +73,7 @@ UCC_CLASS_DECLARE(ucc_tl_rccl_context_t, const ucc_base_context_params_t *,
 
 typedef struct ucc_tl_rccl_team {
     ucc_tl_team_t        super;
-    rcclUniqueId        *unique_id;
+    ncclUniqueId        *unique_id;
     void                *oob_req;
     ncclComm_t           rccl_comm;
     hipStream_t          stream;
