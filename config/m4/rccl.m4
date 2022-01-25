@@ -24,7 +24,7 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
                   [AC_MSG_ERROR([Provided "--with-rccl=${with_rccl}" location does not exist])], [AC_MSG_RESULT([Found RCCL directory])])
             check_rccl_dir="$with_rccl"
             check_rccl_libdir="$with_rccl/lib"
-            CPPFLAGS="-I$with_rccl/include $save_CPPFLAGS"
+            CPPFLAGS="-I$with_rccl/include -I/opt/rocm/include -D__HIP_PLATFORM_AMD__ $save_CPPFLAGS"
             LDFLAGS="-L$check_rccl_libdir $save_LDFLAGS"
         ])
 
@@ -34,7 +34,7 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
             LDFLAGS="-L$check_rccl_libdir $save_LDFLAGS"
         ])
         AC_MSG_RESULT([RCCL flags are $CPPFLAGS $LDFLAGS])
-        AC_CHECK_HEADERS([rccl.h],
+        AC_CHECK_HEADER([rccl.h],
         [
             AC_MSG_RESULT([Found rccl.h header])
             AC_CHECK_LIB([rccl], [ncclCommInitRank],
