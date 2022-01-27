@@ -24,7 +24,7 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
                   [AC_MSG_ERROR([Provided "--with-rccl=${with_rccl}" location does not exist])], [])])
             check_rccl_dir="$with_rccl"
             check_rccl_libdir="$with_rccl/lib"
-            CPPFLAGS="-I$with_rccl/include -I/opt/rocm/include -D__HIP_PLATFORM_AMD__ $save_CPPFLAGS"
+            CPPFLAGS="-I$with_rccl/include $save_CPPFLAGS"
             LDFLAGS="-L$check_rccl_libdir $save_LDFLAGS"
         ])
 
