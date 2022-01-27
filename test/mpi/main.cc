@@ -34,8 +34,8 @@ static ucc_thread_mode_t                   thread_mode  = UCC_THREAD_SINGLE;
 static int                                 iterations   = 1;
 static int                                 show_help    = 0;
 static int                                 num_tests    = 1;
-#ifdef HAVE_CUDA
-static test_set_cuda_device_t test_cuda_set_device = TEST_SET_DEV_NONE;
+#if defined(HAVE_CUDA) || defined(HAVE_HIP)
+static test_set_gpu_device_t test_gpu_set_device = TEST_SET_DEV_NONE;
 #endif
 static std::vector<std::string> str_split(const char *value, const char *delimiter)
 {
@@ -60,7 +60,7 @@ void PrintHelp()
             "barrier, allreduce, allgather, allgatherv, bcast, alltoall, alltoallv "
             "reduce, reduce_scatter\n"
        "--teams      <t1,t2,..>:        list of teams: world,half,reverse,odd_even\n"
-       "--mtypes     <m1,m2,..>:        list of mtypes: host,cuda\n"
+       "--mtypes     <m1,m2,..>:        list of mtypes: host,cuda,rocm\n"
        "--dtypes     <d1,d2,..>:        list of dtypes: (u)int8(16,32,64),float32(64)\n"
        "--ops        <o1,o2,..>:        list of ops:sum,prod,max,min,land,lor,lxor,band,bor,bxor\n"
        "--inplace    <value>:           0 - no inplace, 1 - inplace, 2 - both\n"
@@ -70,7 +70,7 @@ void PrintHelp()
        "--max_size   <value>:           maximum send/recv buffer allocation size\n"
        "--count_bits <c1,c2,..>:        list of counts bits: 32,64          (alltoallv only)\n"
        "--displ_bits <d1,d2,..>:        list of displacements bits: 32,64   (alltoallv only)\n"
-       "--set_device <value>:           0 - don't set, 1 - cuda_device = local_rank, 2 - cuda_device = local_rank % cuda_device_count\n"
+       "--set_device <value>:           0 - don't set, 1 - gpu_device = local_rank, 2 - gpu_device = local_rank % gpu_device_count\n"
        "--num_tests  <value>:           number of tests to run in parallel\n"
        "--help:              Show help\n";
 }
@@ -140,6 +140,8 @@ static ucc_memory_type_t mtype_str_to_type(std::string mtype)
         mem_type = UCC_MEMORY_TYPE_HOST;
     } else if (mtype == "cuda") {
         mem_type = UCC_MEMORY_TYPE_CUDA;
+    } else if (mtype == "rocm") {
+        mem_type = UCC_MEMORY_TYPE_ROCM;
     } else {
         std::cerr << "incorrect memory type: " << mtype << std::endl;
         PrintHelp();
@@ -350,7 +352,7 @@ int ProcessArgs(int argc, char** argv)
                                 {"iter", required_argument, nullptr, 'i'},
                                 {"thread-multiple", no_argument, nullptr, 'T'},
                                 {"num_tests", required_argument, nullptr, 'N'},
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) || defined(HAVE_HIP)
                                 {"set_device", required_argument, nullptr, 'S'},
 #endif
                                 {"help", no_argument, nullptr, 'h'},
@@ -411,9 +413,9 @@ int ProcessArgs(int argc, char** argv)
         case 'N':
             num_tests = std::stoi(optarg);
             break;
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) || defined(HAVE_HIP)
         case 'S':
-            test_cuda_set_device = (test_set_cuda_device_t)std::stoi(optarg);
+            test_gpu_set_device = (test_set_gpu_device_t)std::stoi(optarg);
             break;
 #endif
         case 'h':
@@ -462,9 +464,10 @@ int main(int argc, char *argv[])
         goto mpi_exit;
     }
 
-#ifdef HAVE_CUDA
-    set_cuda_device(test_cuda_set_device);
+#if defined(HAVE_CUDA) || defined(HAVE_HIP)
+    set_gpu_device(test_gpu_set_device);
 #endif
+
     test = new UccTestMpi(argc, argv, thread_mode, 0);
     for (auto &m : mtypes) {
         if (UCC_MEMORY_TYPE_HOST != m && UCC_OK != ucc_mc_available(m)) {

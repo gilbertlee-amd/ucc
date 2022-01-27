@@ -1,5 +1,6 @@
 #
 # Copyright (C) Mellanox Technologies Ltd. 2021.  ALL RIGHTS RESERVED.
+# Copyright (C) Advanced Micro Devices, Inc. 2022. ALL RIGHTS RESERVED.
 # See file LICENSE for terms.
 #
 
@@ -16,12 +17,11 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
         save_CPPFLAGS="$CPPFLAGS"
         save_CFLAGS="$CFLAGS"
         save_LDFLAGS="$LDFLAGS"
-        AC_MSG_RESULT([Trying RCCL dir: $with_rccl])
 
         AS_IF([test ! -z "$with_rccl" -a "x$with_rccl" != "xyes" -a "x$with_rccl" != "xguess"],
         [
             AS_IF([test ! -d $with_rccl],
-                  [AC_MSG_ERROR([Provided "--with-rccl=${with_rccl}" location does not exist])], [AC_MSG_RESULT([Found RCCL directory])])
+                  [AC_MSG_ERROR([Provided "--with-rccl=${with_rccl}" location does not exist])], [])])
             check_rccl_dir="$with_rccl"
             check_rccl_libdir="$with_rccl/lib"
             CPPFLAGS="-I$with_rccl/include -I/opt/rocm/include -D__HIP_PLATFORM_AMD__ $save_CPPFLAGS"
@@ -33,22 +33,26 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
             check_rccl_libdir="$with_rccl_libdir"
             LDFLAGS="-L$check_rccl_libdir $save_LDFLAGS"
         ])
-        AC_MSG_RESULT([RCCL flags are $CPPFLAGS $LDFLAGS])
-        AC_CHECK_HEADER([rccl.h],
+
+        AS_IF([test "x$rocm_happy" = "xyes"],
         [
-            AC_MSG_RESULT([Found rccl.h header])
-            AC_CHECK_LIB([rccl], [ncclCommInitRank],
+            CPPFLAGS="$HIP_CPPFLAGS $CPPFLAGS"
+            LDFLAGS="$ROCM_LDFLAGS $LDFLAGS"
+            AC_CHECK_HEADER([rccl.h],
             [
-                rccl_happy="yes"
-                AC_MSG_RESULT([Found rccl library])
+                AC_CHECK_LIB([rccl], [ncclCommInitRank],
+                [
+                    rccl_happy="yes"
+                ],
+                [
+                    rccl_happy="no"
+                ])
             ],
             [
-                AC_MSG_RESULT([Did not find rccl library])
                 rccl_happy="no"
             ])
         ],
         [
-            AC_MSG_RESULT([Did not find rccl.h header])
             rccl_happy="no"
         ])
 
@@ -77,15 +81,13 @@ AS_IF([test "x$rccl_checked" != "xyes"],[
             ])
         ])
 
-        CFLAGS="$save_CFLAGS -I/opt/rocm/include -D__HIP_PLATFORM_AMD__"
-        CPPFLAGS="$save_CPPFLAGS -I/opt/rocm/include -D__HIP_PLATFORM_AMD__"
+        CFLAGS="$save_CFLAGS -D__HIP_PLATFORM_AMD__"
+        CPPFLAGS="$save_CPPFLAGS"
         LDFLAGS="$save_LDFLAGS"
-
     ],
     [
         AC_MSG_WARN([RCCL was explicitly disabled])
     ])
 
     rccl_checked=yes
-])
 ])
