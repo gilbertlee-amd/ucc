@@ -476,12 +476,7 @@ int main(int argc, char *argv[])
 #if defined(HAVE_CUDA) || defined(HAVE_HIP)
     set_gpu_device(test_gpu_set_device);
 #endif
-<<<<<<< HEAD
-
-    test = new UccTestMpi(argc, argv, thread_mode, 0);
-=======
     test = new UccTestMpi(argc, argv, thread_mode, 0, has_onesided);
->>>>>>> upstream/develop
     for (auto &m : mtypes) {
         if (UCC_MEMORY_TYPE_HOST != m && UCC_OK != ucc_mc_available(m)) {
             std::cerr << "requested memory type " << ucc_memory_type_names[m]
