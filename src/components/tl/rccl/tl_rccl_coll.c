@@ -148,7 +148,9 @@ ucc_status_t ucc_tl_rccl_coll_finalize(ucc_coll_task_t *coll_task)
 ucc_status_t ucc_tl_rccl_collective_sync(ucc_tl_rccl_task_t *task,
                                          hipStream_t stream)
 {
-  //   ucc_tl_rccl_context_t *ctx    = TASK_CTX(task);
+#if ENABLE_DEBUG == 1
+    ucc_tl_rccl_context_t *ctx    = TASK_CTX(task);
+#endif
     ucc_status_t           status = UCC_OK;
 
     task->host_status = task->super.super.status;
